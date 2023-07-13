@@ -30,6 +30,7 @@ TOC
     - [Different](#different)
   - [Git](#git)
   - [Python frameworks/libs/linters/formatters](#python-frameworkslibslintersformatters)
+    - [Django](#django)
     - [Use black](#use-black)
     - [Use pytest](#use-pytest)
     - [Use flake8](#use-flake8)
@@ -37,7 +38,7 @@ TOC
   - [Databases](#databases)
   - [Containers/orchestration](#containersorchestration)
     - [Docker Engine](#docker-engine)
-    - [Docker Composegit push -u origin foo](#docker-composegit-push--u-origin-foo)
+    - [Docker Compose](#docker-compose)
     - [k8s](#k8s)
   - [Other programming languages](#other-programming-languages)
     - [Ruby](#ruby)
@@ -54,6 +55,7 @@ ls -la --human-readable
 ls | head
 ls -l; echo "hello"
 ls -l && echo "hello"
+lsusb
 cd
 cd ..
 cd ../..
@@ -72,6 +74,7 @@ reboot
 cp
 mv
 cat -b hello.txt
+cat /etc/*-release
 tail -n, --lines=[+]NUM 5 hello.txt
 head -n, --lines=[-]NUM 5 hello.txt
 more
@@ -173,6 +176,29 @@ timedatectl
 ### Permissions
 
 ```text
+
+ U   G   W
+rwx rwx rwx     chmod 777 filename
+rwx rwx r-x     chmod 775 filename
+rwx r-x r-x     chmod 755 filename
+rw- rw- r--     chmod 664 filename
+rw- r-- r--     chmod 644 filename
+
+U = User
+G = Group
+W = World
+
+r = Readable
+w = writable
+x = executable
+- = no permission
+
+# sudo chown -R username:usergroup directory
+# or if already as root, grant to user with uid 1000
+chown -R 1000:1000 migration_number.py
+
+sudo chown -R ivanp:ivanp file_name
+
 rwx rwx rwx = 111 111 111
 rw- rw- rw- = 110 110 110
 rwx --- --- = 111 000 000
@@ -210,7 +236,7 @@ r– all others have read only permissions
 openssl rand -hex 32
 
 chmod +x ./setup-scripts/*.sh
-cat /etc/*-release
+
 ```
 
 ## Git
@@ -218,9 +244,18 @@ cat /etc/*-release
 - <https://devopscube.com/set-git-upstream-respository-branch/>
 
 ```shell
+
+git init # inside project directory
+git config --global user.name "Your Name"
+git config --global user.email you@example.com
+git status
+git log
+git diff
+
 git remote add upstream https://github.com/devopscube/vagrant-examples.git
 git branch --remotes
 
+git add [filepath] # *stage the file, ready for commit*
 git add .
 git commit -am "message"
 git push -u origin <new_branch>
@@ -254,6 +289,17 @@ python3 -c "import django; print(django.__path__)"
 ./manage.py migrate --check
 
 source "$( poetry env list --full-path | grep Activated | cut -d' ' -f1 )/bin/activate"
+```
+
+### Django
+
+```shell
+CREATE DATABASE project_db_name;
+CREATE USER project_db_user WITH PASSWORD 'super_password';
+ALTER ROLE project_db_user SET client_encoding TO 'utf8';
+ALTER ROLE project_db_user SET default_transaction_isolation TO 'read committed';
+ALTER ROLE project_db_user SET timezone TO 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE project_db_name TO project_db_user;
 ```
 
 ### Use black
@@ -324,18 +370,19 @@ flake8 <file_name.py>
 
 ```shell
 # For a interactive login shell as `postgres` user
-$ sudo -u postgres -i
-# is !! preferable to...
-sudo su - postgres
+sudo -u postgres -i
 
+# is !! preferable to... sudo su - postgres
 
 postgres@ws-lv-cp3528:~$ psql
 psql (15.1 (Ubuntu 15.1-1.pgdg22.04+1), server 14.6 (Ubuntu 14.6-1.pgdg22.04+1))
 Type "help" for help.
 
-postgres=# \du
+postgres=# \du # show all users
 postgres=# CREATE DATABASE db_foo_name;
-
+postgres=# \c db_foo_name # You are now connecting to database as user "postgres"
+postgres=# \dt # listing tables
+postgres=# \d+ <table_name> # show table columns
 
 # command execution
 sudo -u postgres psql -c "SELECT 1"
@@ -426,7 +473,7 @@ docker exec -it yournamecontainer psql -U postgres -c "GRANT ALL PRIVILEGES ON D
 docker rmi -f $(docker images -f "dangling=true" -q)
 ````
 
-### Docker Composegit push -u origin foo
+### Docker Compose
 
 ```yaml
 volumes:
