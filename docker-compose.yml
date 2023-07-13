@@ -1,0 +1,98 @@
+# Canonical configuration for the services
+
+# The order of precedence (highest to lowest) is as follows:
+
+# Set using docker compose run -e in the CLI
+# Substituted from your shell
+# Set using the environment attribute in the Compose file
+# Use of the --env-file argument in the CLI
+# Use of the env_file attribute in the Compose file
+# Set using an .env file placed at base of your project directory
+# Set in a container image in the ENV directive. Having any ARG or ENV setting in a Dockerfile evaluates only if there is no Docker Compose entry for environment, env_file or run --env.
+
+services:
+  django: &django
+    build:
+      # https://docs.docker.com/compose/compose-file/build/#dockerfile
+      # dockerfile sets an alternate Dockerfile. A relative path MUST be resolved from the build context.
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    image: price_navigator_local_django
+    container_name: price_navigator_local_django
+    depends_on:
+      - postgres
+      - redis
+    #  map ports on host with container
+    ports:
+      - '8000:8000'
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: price_navigator_production_postgres
+    container_name: price_navigator_local_postgres
+
+  docs:
+    image: price_navigator_local_docs
+    container_name: price_navigator_local_docs
+    build:
+      context: .
+      dockerfile: ./compose/local/docs/Dockerfile
+    ports:
+      - '9000:9000'
+    command: /start-docs
+
+  redis:
+    image: redis:6
+    container_name: price_navigator_local_redis
+
+  celeryworker:
+    <<: *django
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    image: price_navigator_local_celeryworker
+    container_name: price_navigator_local_celeryworker
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *django
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    image: price_navigator_local_celerybeat
+    container_name: price_navigator_local_celerybeat
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: /start-celerybeat
+
+  flower:
+    <<: *django
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    image: price_navigator_local_flower
+    container_name: price_navigator_local_flower
+    ports:
+      - '5555:5555'
+    command: /start-flower
+
+  node:
+    build:
+      context: .
+      dockerfile: ./compose/local/node/Dockerfile
+    image: price_navigator_local_node
+    container_name: price_navigator_local_node
+    depends_on:
+      - django
+    command: npm run dev
+    ports:
+      - '3000:3000'

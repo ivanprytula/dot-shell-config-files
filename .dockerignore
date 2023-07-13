@@ -1,0 +1,17 @@
+.editorconfig
+.gitattributes
+.github
+.gitignore
+.idea
+.vscode
+.pre-commit-config.yaml
+venv
+.git
+
+env.example.local
+env.example.prod
+.pytest_cache/
+.mypy_cache/
+.env
+.envrc
+sandbox/

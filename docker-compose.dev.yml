@@ -1,0 +1,50 @@
+# Local dev overrides
+services:
+  django: &django
+    volumes:
+      - .:/app:z
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+
+  postgres:
+    volumes:
+      - price_navigator_local_postgres_data:/var/lib/postgresql/data
+      - price_navigator_local_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.local/.postgres
+
+  docs:
+    volumes:
+      - ./docs:/docs:z
+      - ./config:/app/config:z
+      - ./price_navigator:/app/price_navigator:z
+    env_file:
+      - ./.envs/.local/.django
+
+  # In order to pass REDIS_URL to /enrtypoint step we inherit django service as in base/canonical docker-compose.yml
+  # With it these 3 container won't start
+  celeryworker:
+    <<: *django
+
+  celerybeat:
+    <<: *django
+
+  flower:
+    <<: *django
+
+  node:
+    volumes:
+      - .:/app:z
+      # http://jdlm.info/articles/2016/03/06/lessons-building-node-app-docker.html
+      - /app/node_modules
+
+volumes:
+  price_navigator_local_postgres_data:
+    name: 'price-navigator-warehouse'
+    labels:
+      com.example.description: 'Database volume'
+      com.example.department: 'IT/Ops'
+      com.example.label-with-empty-value: ''
+  price_navigator_local_postgres_data_backups:
+    name: 'price-navigator-backups-dir-for-warehouse'
