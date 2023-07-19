@@ -100,6 +100,7 @@ find -name "docker-*"
 touch hello.txt
 mkdir test
 truncate --size 0 hello.txt
+host localhost
 ```
 
 1. `cd -` : back to the last directory we've been to.
