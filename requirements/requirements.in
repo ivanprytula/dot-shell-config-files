@@ -1,0 +1,16 @@
+# https://pypi.org/project/pip-tools/
+# python -m piptools compile
+# $ pip-compile requirements.in
+# $ pip-compile --output-file=requirements.txt pyproject.toml
+# pip-compile --extra=dev --output-file=dev-requirements.txt pyproject.toml
+
+django
+
+# only update the django package
+# $ pip-compile --upgrade-package django
+
+# update both the django and requests packages
+# $ pip-compile --upgrade-package django --upgrade-package requests
+
+# update the django package to the latest, and requests to v2.0.0
+# $ pip-compile --upgrade-package django --upgrade-package requests==2.0.0

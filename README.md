@@ -238,6 +238,9 @@ openssl rand -hex 32
 
 chmod +x ./setup-scripts/*.sh
 
+# On Debian and derivatives
+dpkg --print-architecture
+
 ```
 
 ## Git
