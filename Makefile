@@ -1,6 +1,6 @@
 .PHONY: help clean test
 
-PYTHON = python3
+PYTHON ?= python3
 
 help:
 	@echo "clean - remove all build, test, coverage and Python artifacts"

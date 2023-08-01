@@ -1,4 +1,6 @@
-# dot-shell-config-files
+# File contains
+
+## dot-shell-config-files
 
 Classic collection of software engineer.
 
@@ -18,15 +20,16 @@ General purpose: repo-cheatsheet for and with examples of ...
 
 TOC
 
-- [dot-shell-config-files](#dot-shell-config-files)
-  - [System service, shell commands, aliases](#system-service-shell-commands-aliases)
+- [File contains](#file-contains)
+  - [dot-shell-config-files](#dot-shell-config-files)
     - [Often used](#often-used)
     - [Kill process on port](#kill-process-on-port)
     - [Export var into shell](#export-var-into-shell)
     - [Battery life](#battery-life)
-    - [Disk usage](#disk-usage)
-    - [Current system’s timezone](#current-systems-timezone)
+    - [Disk/memory usage](#diskmemory-usage)
+    - [Current system’s timezone, calendar](#current-systems-timezone-calendar)
     - [Permissions](#permissions)
+    - [Networking](#networking)
     - [Different](#different)
   - [Git](#git)
   - [Python frameworks/libs/linters/formatters](#python-frameworkslibslintersformatters)
@@ -42,8 +45,6 @@ TOC
     - [k8s](#k8s)
   - [Other programming languages](#other-programming-languages)
     - [Ruby](#ruby)
-
-## System service, shell commands, aliases
 
 ### Often used
 
@@ -83,7 +84,8 @@ env
 echo "Hello"
 echo "Hello" > hello.txt
 echo $(pwd)
-history
+echo $$
+history 10
 !2023
 ctrl+u
 ctrl+a
@@ -97,6 +99,7 @@ vi /etc/ssh/sshd_config  # Esc -> :q
 nano /etc/ssh/sshd_config
 sudo !!
 find -name "docker-*"
+find . -name "*.txt"
 touch hello.txt
 mkdir test
 truncate --size 0 hello.txt
@@ -136,6 +139,8 @@ kill -9 <process id> (macOS) or sudo kill <process id> (Linux)
 # e.g.
 sudo lsof -i -P -n | grep 5432
 sudo kill -9 1234
+
+pkill gunicorn
 ```
 
 ### Export var into shell
@@ -160,18 +165,24 @@ cd /sys/class/power_supply/BAT0/
 cat uevent
 ```
 
-### Disk usage
+### Disk/memory usage
 
 ```shell
 du -h --summarize --total
 du -h --all --exclude="venv" --exclude=".idea" --exclude="htmlcov" --exclude=".git" --exclude=".pytest_cache" --exclude="tmp"
 du -h -a/-s * | sort -h
+du -sh * | sort -hr
+
+df -h
+free
 ```
 
-### Current system’s timezone
+### Current system’s timezone, calendar
 
 ```shell
 timedatectl
+cal
+cal 2022
 ```
 
 ### Permissions
@@ -231,15 +242,63 @@ r– all others have read only permissions
 +----------------------------------------> 1. File Type
 ```
 
+```shell
+chmod +x ./setup-scripts/*.sh
+chmod u=rwx filename.sh
+chmod u=+x filename.sh
+chmod g=-x filename.sh
+chmod o-x filename.sh
+```
+
+### Networking
+
+```shell
+# ping a host x2 times and check if it is responding
+ping -c 2 google.com
+ping -c 2 127.0.0.1
+
+#  iconfig: used to configure the kernel-resident network interfaces
+
+# nslookup: This stands for “Name server Lookup”. This is a tool for checking DNS hostname to Ip or Ip to Hostname
+nslookup www.linkedin.com
+
+# curl: tool used for transferring data to or from a server, using various protocols, such as HTTP, HTTPS, FTP, and more
+curl www.bing.com
+```
+
 ### Different
 
 ```shell
 openssl rand -hex 32
 
-chmod +x ./setup-scripts/*.sh
-
 # On Debian and derivatives
 dpkg --print-architecture
+
+# sort the results of search either alphabetically or numerically. It also sorts files and directories
+sort -f shell_sandbox.sh
+
+# lsof: It is used to display a list of all the open files on a Linux system
+sudo lsof -u root
+
+#  id: used to find out user and group names and numeric ID’s (UID or group ID) of the current user or any other user in the server.
+
+# cut: used to extract specific fields or columns from a file or standard input.
+cut -c1-2 shell_sandbox.sh
+
+# sed: This is used to perform basic text transformations on an input file. It stands for "stream editor" and is a powerful tool for editing text files or streams in a Linux environment.
+
+# diff: This command is used to find the difference between two files.
+diff file1.txt file2.txt
+
+# tr: translate, squeeze, and/or delete characters from standard input, writing to standard output
+cat shell_sandbox.sh | tr --delete "sudo"
+cat shell_sandbox.sh | tr "[a-z]" "[A-Z]"
+
+# ps: We use ps command to check the unique id behind every process.
+# a = show processes for all users
+# u = display the process’s user/owner
+# x = also show processes not attached to a terminal
+ps aux
 
 ```
 
